@@ -26,7 +26,49 @@ class AudioPreprocessor(AudioExplorer):
         # but first we need to change the load
         self.load()
 
-    
+    def load_audio(self):
+
+        try:
+            audio_name = []
+            audio_sr = []
+            audio_duration = []
+            audio_data = []
+            has_TTS = []
+            tts = []
+
+            for audio_file in self.audio_files:
+                data, audio_freq = lb.load(audio_file)
+                # Audio_Name
+                name = audio_file.split('wav')[-2]
+                name = name[1:-1].strip()
+                audio_name.append(name)
+                # Time in seconds
+                audio_duration.append(round(lb.get_duration(audio_data),3))
+                # Audio Sampling Rate
+                audio_sr.append(audio_freq)
+                # Audio time series data
+                audio_data.append(data)
+                # TTS
+                tts_status = self.check_tts_exist(name)
+                has_TTS.append(tts_status)
+                # Add Transcription
+                if(tts_status):
+                    tts.append(self.tts_dict[name])
+                else:
+                    tts.append(None)
+                
+            self.df = pd.DataFrame()
+            self.df['Name'] = audio_name
+            self.df['Duration'] = audio_duration
+            self.df['SamplingRate'] = audio_sr
+            self.df['TimeSeriesData'] = audio_data
+            self.df['HasTTS'] = has_TTS
+            self.df['TTS'] = tts
+
+        except Exception as e:
+            e_logger.exception('Failed to Load Audio Files')
+
+
     
 
 
