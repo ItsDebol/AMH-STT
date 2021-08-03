@@ -1,41 +1,38 @@
-"# AMHH-STT" 
-African-language-Speech-Recognition---Speech-to-Text-
-The World Food Program wants to deploy an intelligent form that collects nutritional information of food bought and sold at markets in two different countries in Africa - Ethiopia and Kenya. In this work I build a deep learning model that is capable of transcribing a speech to text and deliver speech-to-text technology for the choosen two African languages: Amharic and Swahili.
+# African language Speech Recognition - Speech-to-Text
+### The World Food Program wants to deploy an intelligent form that collects nutritional information of food bought and sold at markets in two different countries in Africa - Ethiopia and Kenya. This project attempts to create a web app that does just that. It will allow users to register the list of items they bought using just their voice. This project utilizes deep learning models, Which are capable of transcribing a speech to text and deliver speech-to-text technology for the choosen two African languages: Amharic and Swahili.
 
-Project Structure
+## Project Structure
+### Data
+- Dataset for Amharic https://github.com/getalp/ALFFA_PUBLIC
 
-a) Data
+### Data Features
+- Input features (X): audio clips of spoken words
+- Target labels (y): a text transcript of what was spoken
 
-Dataset for Amharic https://github.com/getalp/ALFFA_PUBLIC
+### Requirements
+- Pytorch/Tensorflow ,
+- librosa, scikit-learn, Python,
 
-Dataset for Swahili https://github.com/getalp/ALFFA_PUBLIC
+### Model Architecture
+- CNN (Convolutional Neural Network) plus RNN-based (Recurrent Neural - Network) architecture
+- RNN-based sequence-to-sequence network
 
-b) Data Features
 
-Input features (X): audio clips of spoken words
+This Project covers the following Topics:
+* Extracting useful information about the data
+* Setting up A/B testing framework of classical, sequencial and machine learning testings types
+* Implementing a speech recognition system for Amharic Language with deep learning methods using MLOps best practices
+* Deploying an easily accessible webapp for users 
 
-Target labels (y): a text transcript of what was spoken
 
-c)libs
+Current Status
 
-classification (All scripts used for training and evaluation)
+* Extracting useful information from the data
 
-d) notebooks
+Coming Changes
 
-scripts (Executable scripts)
+* Integrating Data Augmentation and Feature Extraction to the codebase 
 
-models (Pretrained Models)
 
-e) Requirements
-Pytorch/Tensorflow ,
-librosa, scikit-learn. Python
-
-f) models arctecture
-
-CNN (Convolutional Neural Network) plus RNN-based (Recurrent Neural Network) architecture
-
-RNN-based sequence-to-sequence network
-
-Reference
-
-https://towardsdatascience.com/audio-deep-learning-made-simple-automatic-speech-recognition-asr-how-it-works-716cfce4c706
+### Reference
+[https://towardsdatascience.com/audio-deep-learning-made-simple-automatic-speech-recognition-asr-how-it-works-716cfce4c706]
