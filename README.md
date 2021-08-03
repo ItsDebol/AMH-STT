@@ -1,5 +1,5 @@
 # African language Speech Recognition - Speech-to-Text
-### The World Food Program wants to deploy an intelligent form that collects nutritional information of food bought and sold at markets in two different countries in Africa - Ethiopia and Kenya. This project attempts to create a web app that does just that. It will allow users to register the list of items they bought using just their voice. This project utilizes deep learning models, Which are capable of transcribing a speech to text and deliver speech-to-text technology for the choosen two African languages: Amharic and Swahili.
+The World Food Program wants to deploy an intelligent form that collects nutritional information of food bought and sold at markets in two different countries in Africa - Ethiopia and Kenya. This project attempts to create a web app that does just that. It will allow users to register the list of items they bought using just their voice. This project utilizes deep learning models, Which are capable of transcribing a speech to text and deliver speech-to-text technology for the choosen two African languages: Amharic and Swahili.
 
 
 
