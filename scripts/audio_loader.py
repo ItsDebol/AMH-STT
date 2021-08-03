@@ -32,6 +32,7 @@ class AudioLoader(AudioExplorer):
 
         try:
             audio_name = []
+            audio_mode = []
             audio_frequency = []
             audio_ts_data = []
             audio_duration = []
@@ -48,6 +49,8 @@ class AudioLoader(AudioExplorer):
                 audio_duration.append(round(lb.get_duration(audio_data),3))
                 # Audio Sampling Rate
                 audio_frequency.append(audio_freq)
+                # Audio Mode (Mono, Stereo)
+                audio_mode.append('Mono' if audio_data.shape == 1 else 'Stereo')
                 # Audio time series data
                 audio_ts_data.append(audio_data)
                 # TTS
@@ -62,6 +65,7 @@ class AudioLoader(AudioExplorer):
             self.df = pd.DataFrame()
             self.df['Name'] = audio_name
             self.df['Duration'] = audio_duration
+            self.df['Channels'] = audio_mode
             self.df['SamplingRate'] = audio_frequency
             self.df['TimeSeriesData'] = audio_ts_data
             self.df['HasTTS'] = has_TTS
