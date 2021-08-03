@@ -1,9 +1,12 @@
 import sys
 import os
 import librosa as lb
+from librosa.core import audio
 import pandas as pd
-sys.path.append(os.path.abspath(os.path.join('..')))
-from audio_explorer import AudioExplorer
+try:
+    from audio_explorer import AudioExplorer
+except:
+    from scripts.audio_explorer import AudioExplorer
 
 try:
     from logger_creator import CreateLogger
@@ -24,20 +27,19 @@ class AudioLoader(AudioExplorer):
 
         # so now we want to load the audio and transcription
         # but first we need to change the load
-        self.load()
 
     def load_audio(self):
 
         try:
             audio_name = []
-            audio_sr = []
+            audio_frequency = []
+            audio_ts_data = []
             audio_duration = []
-            audio_data = []
             has_TTS = []
             tts = []
 
             for audio_file in self.audio_files:
-                data, audio_freq = lb.load(audio_file)
+                audio_data, audio_freq = lb.load(audio_file)
                 # Audio_Name
                 name = audio_file.split('wav')[-2]
                 name = name[1:-1].strip()
@@ -45,9 +47,9 @@ class AudioLoader(AudioExplorer):
                 # Time in seconds
                 audio_duration.append(round(lb.get_duration(audio_data),3))
                 # Audio Sampling Rate
-                audio_sr.append(audio_freq)
+                audio_frequency.append(audio_freq)
                 # Audio time series data
-                audio_data.append(data)
+                audio_ts_data.append(audio_data)
                 # TTS
                 tts_status = self.check_tts_exist(name)
                 has_TTS.append(tts_status)
@@ -60,18 +62,28 @@ class AudioLoader(AudioExplorer):
             self.df = pd.DataFrame()
             self.df['Name'] = audio_name
             self.df['Duration'] = audio_duration
-            self.df['SamplingRate'] = audio_sr
-            self.df['TimeSeriesData'] = audio_data
+            self.df['SamplingRate'] = audio_frequency
+            self.df['TimeSeriesData'] = audio_ts_data
             self.df['HasTTS'] = has_TTS
             self.df['TTS'] = tts
-
+            print(self.df.loc[0,"Name"])
         except Exception as e:
             e_logger.exception('Failed to Load Audio Files')
 
+    def get_audio_info(self) -> pd.DataFrame:
+        try:
+            return self.df.drop(columns=['TTS','TimeSeriesData'],axis=1)
+        except Exception as e:
+            e_logger.exception('Failed to return Audio Information')
+
+    def get_audio_info_with_data_tts(self) -> pd.DataFrame:
+        try:
+            self.df
+        except Exception as e:
+            e_logger.exception('Failed to return Audio Information')
 
     
 
-
-if __name__ == "__main__":
-    ap = AudioPreprocessor(directory='../data/train')
-    print(ap.get_tts().keys())
+# if __name__ == "__main__":
+#     al = AudioLoader(directory='data/train')
+#     print(al.get_audio_info().head(3))
