@@ -21,15 +21,16 @@ The World Food Program wants to deploy an intelligent form that collects nutriti
 
 
 #### Tasks:
-- [ ] Extracting useful information about the data
-- [ ] Setting up A/B testing framework of classical, sequencial and machine learning testings types
-- [ ] Implementing a speech recognition system for Amharic Language with deep learning methods using MLOps best practices
-- [ ] Deploying an easily accessible webapp for users 
+- [x] Setting up DVC and MLflow
+- [ ] Exploring the data and Extracting useful information
+- [ ] Preprocessing the data and Extracting features
+- [ ] Modelling and Deployment using MLOps
+- [ ] Serving predictions on a web interface
 
 
 
 #### Current Status
-* Extracting useful information from the data
+* Exploring the data and Extracting useful information from the data
 
 #### Coming Changes
 * Integrating Data Augmentation and Feature Extraction to the codebase 
