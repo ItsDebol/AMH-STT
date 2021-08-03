@@ -20,12 +20,11 @@
 - RNN-based sequence-to-sequence network
 
 
-This Project covers the following Topics:
-* Extracting useful information about the data
-* Setting up A/B testing framework of classical, sequencial and machine learning testings types
-* Implementing a speech recognition system for Amharic Language with deep learning methods using MLOps best practices
-* Deploying an easily accessible webapp for users 
-
+#### Tasks:
+- [ ] Extracting useful information about the data
+- [ ] Setting up A/B testing framework of classical, sequencial and machine learning testings types
+- [ ] Implementing a speech recognition system for Amharic Language with deep learning methods using MLOps best practices
+- [ ] Deploying an easily accessible webapp for users 
 
 
 
