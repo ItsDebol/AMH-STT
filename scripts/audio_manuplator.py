@@ -4,37 +4,24 @@ import pandas as pd
 import numpy as np
 import librosa
 
-class Audio_Manuplator():
-    def __init__(self,audio,sr) -> None:
-        self.audio = audio
-        self.sr = sr
-        """
-        Initialize the Class assigning its object 
-        a new audio file and sampling rate 
-        Parameters
-        ----------
-        audio - Audio file
-        sr - Sampling rate
+def convert_to_mono(y):
+    return librosa.to_mono(y)
 
-        Returns
-        -------
-        None
-        """
-    def convert_to_channels(self):
-        pass
+def resample(y,sr,new_sr):
+    # resample audio
+    return librosa.resample(y,sr,new_sr)
 
-    def resample(self,new_sr):
-        # resample audio
-        return librosa.resample(self.audio,self.sr,new_sr)
-    
-    def resize(self):
-        pass
+def resize(self):
+    pass
 
-    def extract_features(self,hop_len=512, win_len=1024, n_mels=128):
-        # extract melspectogram from the audio file using librosa library
-        melspect = librosa.feature.melspectrogram(y=self.audio, sr=self.sr, hop_len=hop_len, win_len=win_len, n_mels=n_mels)
-        melspect_db = librosa.power_to_db(melspect, ref=np.max)
-        return melspect,melspect_db
+def extract_features(y,sr,hop_len=512, win_len=1024, n_mels=128):
+    # extract melspectogram from the audio file using librosa library
+    melspect = librosa.feature.melspectrogram(y=y, sr=sr, hop_len=hop_len, win_length=win_len, n_mels=n_mels)
+    return melspect
+
+def convert_to_db(melspect):
+    melspect_db = librosa.power_to_db(melspect, ref=np.max)
+    return melspect_db
 
 
 def melspect_resize(melspect,n_mels=128):
@@ -48,3 +35,6 @@ def melspect_resize(melspect,n_mels=128):
         random_split = random.randint(0,melspect_len-n_mels)
         melspect = melspect[:,random_split:random_split+n_mels]
     return melspect
+
+      
+
