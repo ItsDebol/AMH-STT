@@ -14,7 +14,7 @@ e_logger = CreateLogger('AudioPreprocessor')
 e_logger = e_logger.get_default_logger()
 
 
-class AudioPreprocessor(AudioExplorer):
+class AudioLoader(AudioExplorer):
     def __init__(self, directory:str, audio_dir:str=r'/wav/*.wav', tts_file:str=r'/trsTrain.txt'):
         try:
             super().__init__(directory,audio_dir,tts_file)
