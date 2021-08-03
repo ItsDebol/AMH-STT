@@ -1,6 +1,8 @@
 # African language Speech Recognition - Speech-to-Text
 ### The World Food Program wants to deploy an intelligent form that collects nutritional information of food bought and sold at markets in two different countries in Africa - Ethiopia and Kenya. This project attempts to create a web app that does just that. It will allow users to register the list of items they bought using just their voice. This project utilizes deep learning models, Which are capable of transcribing a speech to text and deliver speech-to-text technology for the choosen two African languages: Amharic and Swahili.
 
+
+
 ## Project Structure
 ### Data
 - Dataset for Amharic https://github.com/getalp/ALFFA_PUBLIC
@@ -25,14 +27,17 @@ This Project covers the following Topics:
 * Deploying an easily accessible webapp for users 
 
 
-Current Status
 
+
+#### Current Status
 * Extracting useful information from the data
 
-Coming Changes
-
+#### Coming Changes
 * Integrating Data Augmentation and Feature Extraction to the codebase 
 
 
+
+
+
 ### Reference
-[https://towardsdatascience.com/audio-deep-learning-made-simple-automatic-speech-recognition-asr-how-it-works-716cfce4c706]
+https://towardsdatascience.com/audio-deep-learning-made-simple-automatic-speech-recognition-asr-how-it-works-716cfce4c706
