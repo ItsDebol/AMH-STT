@@ -37,10 +37,10 @@ class AudioExplorer:
             with open(self.tts_file, encoding='UTF-8') as tts_handle:
                 lines = tts_handle.readlines()
                 for line in lines:
-                    transliteration, file_name = line.split('</s>')
-                    transliteration = transliteration.replace('<s>', '').strip()
+                    text, file_name = line.split('</s>')
+                    text = text.replace('<s>', '').strip()
                     file_name = file_name.strip()[1:-1]
-                    self.tts_dict[file_name] = transliteration
+                    self.tts_dict[file_name] = text
         except FileNotFoundError as e:
             logger.exception(f'File {self.tts_file} doesnt exist in the directory')
         except Exception as e:
@@ -81,6 +81,7 @@ class AudioExplorer:
 
         try:
             audio_name = []
+            audio_mode = []
             audio_amplitude_min = []
             audio_amplitude_max = []
             audio_amplitude_mean = []
@@ -96,6 +97,8 @@ class AudioExplorer:
                 name = audio_file.split('wav')[-2]
                 name = name[1:-1].strip()
                 audio_name.append(name)
+                # Audio Mode (Mono, Stereo)
+                audio_mode.append('Mono' if audio_data.shape == 1 else 'Stereo')
                 # Time in seconds
                 audio_duration.append(round(lb.get_duration(audio_data),3))
                 # Minimum Audio Amplitude
@@ -119,6 +122,7 @@ class AudioExplorer:
                 
             self.df = pd.DataFrame()
             self.df['Name'] = audio_name
+            self.df['Channel'] = audio_mode
             self.df['Duration'] = audio_duration
             self.df['Frequency'] = audio_frequency
             self.df['MinAmplitude'] = audio_amplitude_min
