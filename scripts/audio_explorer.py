@@ -7,6 +7,8 @@ import librosa.display as lbdisp
 from glob import glob
 from json import dump
 
+from scipy.ndimage.measurements import label
+
 try:
     from logger_creator import CreateLogger
 except:
@@ -208,11 +210,12 @@ class AudioExplorer:
             fig, ax = plt.subplots(figsize=figsize)
             y_harm, y_perc = lb.effects.hpss(self.audio_files[index])
             lbdisp.waveplot(
-                y_harm, sr=self.audio_freq[index], alpha=0.25, ax=ax)
+                y_harm, sr=self.audio_freq[index], alpha=0.25, ax=ax, label='Harmonic')
             lbdisp.waveplot(
-                y_perc, sr=self.audio_freq[index], color='r', alpha=0.5, ax=ax)
+                y_perc, sr=self.audio_freq[index], color='r', alpha=0.5, ax=ax, label='Percussive')
             ax.set(title='Harmonic + Percussive Visualization',
                    xlabel='Time(s)', ylabel='Amplitude')
+            ax.legend()
             ax.label_outer()
             return plt
         except IndexError as e:
