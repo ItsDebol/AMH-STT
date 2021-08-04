@@ -32,8 +32,8 @@ class AudioManipulator:
         self.extract_features()
 
     def convert_to_mono(self):
-        stereo_mask = self.df_audio.query("Channels == 'Stereo'")
-        self.df_audio.loc[stereo_mask,"TimeSeriesData"] = self.df_audio.loc[stereo_mask,"TimeSeriesData"].apply(lambda x: librosa.to_mono(x))
+        self.df_audio["TimeSeriesData"] = self.df_audio["TimeSeriesData"].apply(lambda x: librosa.to_mono(x))
+        self.df_audio["Channels"] = "Mono"
         return self.df_audio
 
     def resample(self,new_audio_sr):
@@ -44,9 +44,6 @@ class AudioManipulator:
     def resize(self):
         pass
 
-    def convert_to_db(S,ref):
-        melspect_db = librosa.power_to_db(S, ref=ref)
-        return melspect_db
 
     def extract_features(self,hop_len=512, win_len=1024, n_mels=128):
     # extract melspectogram from the audio file using librosa library
@@ -56,7 +53,7 @@ class AudioManipulator:
         for y,sr in zip(self.df_audio["TimeSeriesData"],self.df_audio["SamplingRate"]):
             melspect = librosa.feature.melspectrogram(y=y, sr=sr, hop_length=hop_len, win_length=win_len, n_mels=n_mels,fmax=sr/2)
             melspectogram.append(melspect)
-            melspect_db = self.convert_to_db(melspect, ref=np.max)
+            melspect_db = librosa.power_to_db(melspect, ref=np.max)
             melspectogram_db.append(melspect_db)
         self.features_df = pd.DataFrame()
         self.features_df['Name'] = self.df_audio["Name"]
