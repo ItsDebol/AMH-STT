@@ -40,7 +40,7 @@ class AudioLoader(AudioExplorer):
             tts = []
 
             for audio_file in self.audio_files:
-                audio_data, audio_freq = lb.load(audio_file)
+                audio_data, audio_freq = lb.load(audio_file,sr=None)
                 # Audio_Name
                 name = audio_file.split('wav')[-2]
                 name = name[1:-1].strip()
@@ -50,7 +50,7 @@ class AudioLoader(AudioExplorer):
                 # Audio Sampling Rate
                 audio_frequency.append(audio_freq)
                 # Audio Mode (Mono, Stereo)
-                audio_mode.append('Mono' if audio_data.shape == 1 else 'Stereo')
+                audio_mode.append('Mono' if len(audio_data.shape) == 1 else 'Stereo')
                 # Audio time series data
                 audio_ts_data.append(audio_data)
                 # TTS
@@ -70,7 +70,7 @@ class AudioLoader(AudioExplorer):
             self.df['TimeSeriesData'] = audio_ts_data
             self.df['HasTTS'] = has_TTS
             self.df['TTS'] = tts
-            print(self.df.loc[0,"Name"])
+
         except Exception as e:
             e_logger.exception('Failed to Load Audio Files')
 
