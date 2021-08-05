@@ -6,16 +6,14 @@ import librosa.display as lbdisp
 from glob import glob
 from json import dump
 
-<<<<<<< HEAD
 from scipy.ndimage.measurements import label
 from logger_creator import CreateLogger
 
-=======
+
 try:
     from logger_creator import CreateLogger
 except:
     from scripts.logger_creator import CreateLogger
->>>>>>> 01993cbaf4d3f1d94e694ab60f2b6c3d4c92149b
 
 logger = CreateLogger('AudioExplorer', handlers=1)
 logger = logger.get_default_logger()
