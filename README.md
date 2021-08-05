@@ -22,18 +22,19 @@ The World Food Program wants to deploy an intelligent form that collects nutriti
 
 #### Tasks:
 - [x] Setting up DVC and MLflow
-- [ ] Exploring the data and Extracting useful information
-- [ ] Preprocessing the data and Extracting features
+- [x] Exploring the data and Extracting useful information
+- [ ] Preprocessing and Augmenting the data  
+- [ ] Extracting features
 - [ ] Modelling and Deployment using MLOps
 - [ ] Serving predictions on a web interface
 
 
 
 #### Current Status
-* Exploring the data and Extracting useful information from the data
+* Integrating Preprocessing and Augmentation to the code base
 
 #### Coming Changes
-* Integrating Data Augmentation and Feature Extraction to the codebase 
+* Modelling and Deployment using MLOps
 
 
 
