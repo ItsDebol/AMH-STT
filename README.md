@@ -41,3 +41,4 @@ The World Food Program wants to deploy an intelligent form that collects nutriti
 
 ### Reference
 https://towardsdatascience.com/audio-deep-learning-made-simple-automatic-speech-recognition-asr-how-it-works-716cfce4c706
+https://www.kaggle.com/CVxTz/audio-data-augmentation

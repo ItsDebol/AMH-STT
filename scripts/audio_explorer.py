@@ -6,9 +6,16 @@ import librosa.display as lbdisp
 from glob import glob
 from json import dump
 
+<<<<<<< HEAD
 from scipy.ndimage.measurements import label
 from logger_creator import CreateLogger
 
+=======
+try:
+    from logger_creator import CreateLogger
+except:
+    from scripts.logger_creator import CreateLogger
+>>>>>>> 01993cbaf4d3f1d94e694ab60f2b6c3d4c92149b
 
 logger = CreateLogger('AudioExplorer', handlers=1)
 logger = logger.get_default_logger()
@@ -93,6 +100,7 @@ class AudioExplorer:
             audio_amplitude_median = []
             audio_frequency = []
             audio_duration = []
+            audio_zero_crossing = []
             has_TTS = []
             tts = []
 
@@ -112,6 +120,9 @@ class AudioExplorer:
                     'Mono' if audio_data.shape == 1 else 'Stereo')
                 # Time in seconds
                 audio_duration.append(round(lb.get_duration(audio_data), 3))
+                # Zero Crossing
+                zero_crossings = lb.zero_crossings(audio_data, pad=False)
+                audio_zero_crossing.append(sum(zero_crossings))
                 # Minimum Audio Amplitude
                 audio_amplitude_min.append(round(min(audio_data), 3))
                 # Maximum Audio Amplitude
@@ -136,6 +147,7 @@ class AudioExplorer:
             self.df['Channel'] = audio_mode
             self.df['Duration(sec)'] = audio_duration
             self.df['Frequency(Hz)'] = audio_frequency
+            self.df['ZeroCrossings'] = audio_zero_crossing
             self.df['MinAmplitude'] = audio_amplitude_min
             self.df['MaxAmplitude'] = audio_amplitude_max
             self.df['AmplitudeMean'] = audio_amplitude_mean
@@ -158,9 +170,14 @@ class AudioExplorer:
         except Exception as e:
             logger.exception('Failed to return Audio Information')
 
-    def get_audio_files(self) -> list:
+    def get_audio_files(self, start: int = 0, end: int = 0) -> list:
+        if(end == 0):
+            end = len(self.audio_files)
         try:
-            return self.audio_files, self.audio_freq
+            return self.audio_files[start:end], self.audio_freq[start:end]
+        except IndexError as e:
+            logger.exception(
+                f"Audio Files only exist between 0 - {len(self.audio_files) - 1}")
         except Exception as e:
             logger.exception('Failed to return Audio Files')
 
@@ -176,6 +193,20 @@ class AudioExplorer:
     def get_audio_file_info(self, index: int):
         try:
             return self.df.iloc[index, :]
+        except IndexError as e:
+            logger.exception(
+                f"Audio Files only exist between 0 - {len(self.df) - 1}")
+        except Exception as e:
+            logger.exception('Failed to return Audio File')
+
+    def get_audio_files_info(self, with_tts=False, start: int = 0, end: int = 0):
+        if(end == 0):
+            end = len(self.audio_files)
+        try:
+            if(with_tts):
+                return self.df.iloc[start:end]
+            else:
+                return self.df.drop('TTS', axis=1).iloc[start:end]
         except IndexError as e:
             logger.exception(
                 f"Audio Files only exist between 0 - {len(self.df) - 1}")
@@ -246,7 +277,7 @@ class AudioExplorer:
             plt.figure(figsize=figsize)
             lbdisp.specshow(
                 Xdb, sr=self.audio_freq[index], x_axis='time', y_axis=y_axis)
-            plt.title = 'Mel spectrogram'
+            plt.title('Mel spectrogram')
             plt.colorbar(format='%+2.0f dB')
             return plt
 
@@ -260,11 +291,11 @@ class AudioExplorer:
         try:
             mfccs = lb.feature.mfcc(
                 self.audio_files[index], sr=self.audio_freq[index])
-            fig, ax = plt.subplots(figsize=figsize)
+            plt.figure(figsize=figsize)
             lbdisp.specshow(
-                mfccs, sr=self.audio_freq[index], x_axis='time', ax=ax)
-            ax.set(title='MFCC Visualization',
-                   xlabel='Time(s)', ylabel='MFCC')
+                mfccs, sr=self.audio_freq[index], x_axis='time')
+            plt.title('MFCC Visualization')
+            plt.colorbar()
             return plt
 
         except IndexError as e:
