@@ -14,6 +14,10 @@ try:
     from logger_creator import CreateLogger
 except:
     from scripts.logger_creator import CreateLogger
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6e6c0ddd230ac96c5e611850309f60329968c02f
 
 logger = CreateLogger('AudioExplorer', handlers=1)
 logger = logger.get_default_logger()
