@@ -60,7 +60,7 @@ class AudioManipulation:
         suffix = pth.suffix
         bg_transform = muda.deformers.BackgroundNoise(n_samples=1, files=bg_noises)
         for i, jam_out in enumerate(bg_transform.transform(jam)):
-             muda.save('{}/{}_{}_{:02d}{}'.format(parent, file_name, suffix_file,i, suffix),'{}/{}_{}_{:02d}.{}'.format(parent, file_name, suffix_file,i, "jams"),jam_out)
+             muda.save('{}/{}{}{:02d}{}'.format(parent, file_name, suffix_file,i, suffix),'{}/{}_{}_{:02d}.{}'.format(parent, file_name, suffix_file,i, "jams"),jam_out)
 
 if __name__ == "__main__":
     y = AudioManipulation()

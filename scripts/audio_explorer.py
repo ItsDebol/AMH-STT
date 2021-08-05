@@ -1,4 +1,3 @@
-# imports
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -8,11 +7,8 @@ from glob import glob
 from json import dump
 
 from scipy.ndimage.measurements import label
+from logger_creator import CreateLogger
 
-try:
-    from logger_creator import CreateLogger
-except:
-    from scripts.logger_creator import CreateLogger
 
 logger = CreateLogger('AudioExplorer', handlers=1)
 logger = logger.get_default_logger()
