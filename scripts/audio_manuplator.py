@@ -28,9 +28,6 @@ class AudioManipulator:
         except Exception as e:
             e_logger.exception("Failed Initializing")
 
-            
- 
-
     def audio_preprocess_extract(self):
         pass
 
@@ -86,7 +83,7 @@ def check_channels(y):
 def pad_silence(y, sr, max_s):
     num_rows, y_len = y.shape
     max_len = sr * max_s
-    print(max_len)
+
 #     Truncate the signal to the given length
 #     if (y_len > max_len):
 #         y = y[:,:max_len]
@@ -97,7 +94,6 @@ def pad_silence(y, sr, max_s):
         pad_end_len = int(max_len - y_len - pad_begin_len)
         # Pad with 0s
         pad_begin = np.zeros((num_rows, pad_begin_len))
-#         print(type(num_rows),type(pad_end_len))
         pad_end = np.zeros((num_rows, pad_end_len))
         y = np.hstack((pad_begin, y, pad_end))      
     return y
