@@ -7,8 +7,6 @@ import librosa.display as lbdisp
 from glob import glob
 from json import dump
 
-from scipy.ndimage.measurements import label
-
 try:
     from logger_creator import CreateLogger
 except:
