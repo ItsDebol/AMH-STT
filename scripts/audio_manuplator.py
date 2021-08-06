@@ -35,7 +35,7 @@ class AudioManipulator:
         pass
 
     def get_max_duration(self):
-        self.max_dur= float(round(self.df_audio["Duration"].max(),3))
+        self.max_dur= float(round(self.df_audio["Duration(sec)"].max(),3))
 
     
     def convert_stereo_audio(self):

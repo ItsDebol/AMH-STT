@@ -82,7 +82,7 @@ class AudioLoader(AudioExplorer):
 
     def get_audio_info_with_data_tts(self) -> pd.DataFrame:
         try:
-            self.df
+            return self.df
         except Exception as e:
             e_logger.exception('Failed to return Audio Information')
 
