@@ -62,8 +62,9 @@ class AudioExplorer:
 
     def export_tts(self, file_name: str) -> None:
         try:
-            with open(file_name, "w") as export_file:
-                dump(self.tts_dict, export_file, indent=4, sort_keys=True)
+            with open(file_name, "w", encoding='UTF-8') as export_file:
+                dump(self.tts_dict, export_file, indent=4,
+                     sort_keys=True, ensure_ascii=False)
 
             logger.info(
                 f'Successfully Exported Transliteration as JSON file to {file_name}.')
@@ -114,9 +115,10 @@ class AudioExplorer:
                 audio_name.append(name)
                 # Audio Mode (Mono, Stereo)
                 audio_mode.append(
-                    'Mono' if audio_data.shape == 1 else 'Stereo')
+                    'Mono' if len(audio_data.shape) == 1 else 'Stereo')
                 # Time in seconds
-                audio_duration.append(round(lb.get_duration(audio_data), 3))
+                audio_duration.append(
+                    round(lb.get_duration(audio_data, sr=audio_freq), 3))
                 # Zero Crossing
                 zero_crossings = lb.zero_crossings(audio_data, pad=False)
                 audio_zero_crossing.append(sum(zero_crossings))
