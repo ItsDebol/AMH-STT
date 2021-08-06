@@ -86,7 +86,6 @@ def check_channels(y):
 def pad_silence(y, sr, max_s):
     num_rows, y_len = y.shape
     max_len = sr * max_s
-    print(max_len)
 #     Truncate the signal to the given length
 #     if (y_len > max_len):
 #         y = y[:,:max_len]

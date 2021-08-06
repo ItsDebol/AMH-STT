@@ -45,7 +45,7 @@ class AudioLoader(AudioExplorer):
                 name = name[1:-1].strip()
                 audio_name.append(name)
                 # Time in seconds
-                audio_duration.append(round(lb.get_duration(audio_data),3))
+                audio_duration.append(round(lb.get_duration(audio_data,sr=16000),3))
                 # Audio Sampling Rate
                 audio_frequency.append(audio_freq)
                 # Audio Mode (Mono, Stereo)
