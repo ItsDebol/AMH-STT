@@ -48,7 +48,7 @@ class AudioManipulator:
     def resize_audio(self):
         converted_data = self.df_audio.apply(lambda row:pad_silence(row["TimeSeriesData"],row["SamplingRate"],self.max_dur),axis=1)
         self.df_audio["TimeSeriesData"] = converted_data
-        update_duration = self.df_audio["TimeSeriesData"].apply(lambda row: round(librosa.get_duration(row),3))
+        update_duration = self.df_audio["TimeSeriesData"].apply(lambda row: round(librosa.get_duration(row,sr=16000),3))
         self.df_audio["Duration"] = update_duration
     
     def resample_audio(self):
