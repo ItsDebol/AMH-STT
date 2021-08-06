@@ -1,5 +1,11 @@
 outs:
+<<<<<<< HEAD
 - md5: c747234a3350137f1f3012923125ded9.dir
   size: 1193023867
   nfiles: 1004
+=======
+- md5: da715a32afdd8de507fd8a7da8dc23e2.dir
+  size: 434131067
+  nfiles: 514
+>>>>>>> data update,sr=16000,resize=13s,stereo
   path: train
