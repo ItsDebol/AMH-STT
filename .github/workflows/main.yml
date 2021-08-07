@@ -21,11 +21,11 @@ jobs:
         run: |
           python -m unittest
 
-      # - name: Model Results
-      #   env:
-      #     REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     python scripts/cml_result.py
+      - name: Model Results
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/cml_result.py
 
-      #     cat models/results.txt >> report.md
-      #     cml-send-comment report.md
+          cat models/results.txt >> report.md
+          cml-send-comment report.md
