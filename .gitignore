@@ -1,0 +1,4 @@
+scripts/mlruns/
+notebooks/mlruns
+*/__pycache__/
+scripts/__pycache__/
