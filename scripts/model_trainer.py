@@ -9,7 +9,7 @@ from typing import Tuple
 from json import load
 from python_speech_features import mfcc, logfbank
 import mlflow
-from tensorflow.keras.layers import Conv1D, BatchNormalization, Dense, Activation, Bidirectional, TimeDistributed, Masking, Input, GRU, SimpleRNN
+from tensorflow.keras.layers import LSTM, BatchNormalization, Dense, Activation, Bidirectional, TimeDistributed, Masking, Input, Dropout, GRU, SimpleRNN
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 
@@ -268,24 +268,24 @@ class ModelTrainer():
 
     def get_stacked_LSTM_model(self):
         try:
-            input_masking = tf.keras.layers.Masking(
+            input_masking = Masking(
                 ModelTrainer.FEAT_MASK_VALUE)(self.input_feature)
 
-            x = tf.keras.layers.LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+            x = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
                                      dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(input_masking)
-            x_1 = tf.keras.layers.BatchNormalization()(x)
-            x_2 = tf.keras.layers.LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+            x_1 = BatchNormalization()(x)
+            x_2 = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
                                        dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_1)
-            x_3 = tf.keras.layers.BatchNormalization()(x_2)
-            x_4 = tf.keras.layers.LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+            x_3 = BatchNormalization()(x_2)
+            x_4 = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
                                        dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_3)
-            x_5 = tf.keras.layers.BatchNormalization()(x_4)
-            x_6 = tf.keras.layers.LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                       dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_5)
-            x_7 = tf.keras.layers.BatchNormalization()(x_6)
-            x_8 = tf.keras.layers.LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_7)
-            self.layer_output = tf.keras.layers.TimeDistributed(Dense(self.num_classes, kernel_initializer=tf.keras.initializers.TruncatedNormal(
+            x_5 = BatchNormalization()(x_4)
+            x_6 = LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_5)
+            x_7 = BatchNormalization()(x_6)
+            x_8 = LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_7)
+            self.layer_output = TimeDistributed(Dense(self.num_classes, kernel_initializer=tf.keras.initializers.TruncatedNormal(
                 0.0, 0.1), bias_initializer='zeros', name='logit'))(x_8)
 
             self.layer_loss = CTCLossLayer()(
@@ -296,16 +296,53 @@ class ModelTrainer():
         except Exception as e:
             logger.exception('Failed to define Stacked LSTM Model')
 
+    def get_bidirectional_lstm_model(self):
+        try:
+            input_masking = Masking(
+                ModelTrainer.FEAT_MASK_VALUE)(self.input_feature)
+
+            x = Bidirectional(LSTM(256, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                                                   dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True),
+                              backward_layer=LSTM(256, activation='tanh', recurrent_activation='sigmoid',
+                                                  kernel_regularizer=l2(0.01), dropout=0.2, recurrent_dropout=0, use_bias=True,
+                                                  unroll=False, return_sequences=True))(input_masking)
+
+            x_1 = BatchNormalization()(x)
+            x_2 = Bidirectional(LSTM(256, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                                     dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True),
+                                backward_layer=LSTM(256, activation='tanh', recurrent_activation='sigmoid',
+                                                    kernel_regularizer=l2(0.01), dropout=0.2, recurrent_dropout=0, use_bias=True,
+                                                    unroll=False, return_sequences=True))(input_masking)
+            x_3 = BatchNormalization()(x_2)
+            x_4 = TimeDistributed(
+                Dense(self.num_classes, activation='maxout', kernel_regularizer=l2(0.01)))(x_3)
+            x_5 = Dropout(0.2)(x_4)
+            x_6 = TimeDistributed(
+                Dense(self.num_classes, activation='maxout', kernel_regularizer=l2(0.01)))(x_5)
+            x_7 = Dropout(0.1)(x_6)
+
+            self.layer_output = TimeDistributed(Dense(self.num_classes, kernel_initializer=tf.keras.initializers.TruncatedNormal(
+                0.0, 0.1), bias_initializer='zeros', name='logit'))(x_7)
+
+            self.layer_loss = CTCLossLayer()(
+                [self.input_label, self.layer_output, self.input_label_len, self.input_feature_len])
+
+            logger.info('Successfully Defined Bidirectional LSTM MODEL')
+
+        except Exception as e:
+            logger.exception('Failed to define Bidirectional LSTM Model')
+
     def create_train_predict_models(self, model_name: str = 'stacked_lstm'):
         try:
-            models = {'stacked_lstm': self.get_stacked_LSTM_model}
+            models = {'stacked_lstm': self.get_stacked_LSTM_model,
+                      'bidirectional_lstm': self.get_bidirectional_lstm_model}
             # Create models for training and prediction
             if(model_name in models.keys()):
                 models[model_name]()
-                self.model_train = tf.keras.models.Model(inputs=[self.input_feature, self.input_label, self.input_feature_len, self.input_label_len],
-                                                         outputs=self.layer_loss)
+                self.model_train = Model(inputs=[self.input_feature, self.input_label, self.input_feature_len, self.input_label_len],
+                                         outputs=self.layer_loss)
 
-                self.model_predict = tf.keras.models.Model(
+                self.model_predict = Model(
                     inputs=self.input_feature, outputs=self.layer_output)
 
                 print(self.model_train.summary())
