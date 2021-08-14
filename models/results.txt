@@ -1,0 +1,7 @@
+# Results
+## Feature Used: 
+    ### LogMelFB
+## Model Used:
+    ### STACKED LSTM LAYERS
+## Final LRE Error Rate:
+    ### 0.0486

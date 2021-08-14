@@ -1,14 +1,14 @@
 from logging import log
-import tensorflow as tf
 import scipy.io.wavfile as wav
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple
-
 from json import load
 from python_speech_features import mfcc, logfbank
 import mlflow
+
+import tensorflow as tf
 from tensorflow.keras.layers import LSTM, BatchNormalization, Dense, Activation, Bidirectional, TimeDistributed, Masking, Input, Dropout, GRU, SimpleRNN
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
@@ -123,9 +123,9 @@ class ModelTrainer():
                         np.std(input_val)
                     self.inputs_list.append(input_val)
                 elif(self.feature_used == 'logmelfb'):
-                    self.num_features = 161
+                    self.num_features = 26
                     input_val = logfbank(
-                        self.audio_list[index], samplerate=ModelTrainer.SAMPLE_RATE, nfilt=161)
+                        self.audio_list[index], samplerate=ModelTrainer.SAMPLE_RATE, nfilt=26)
                     input_val = (input_val - np.mean(input_val)) / \
                         np.std(input_val)
                     self.inputs_list.append(input_val)
@@ -271,20 +271,20 @@ class ModelTrainer():
             input_masking = Masking(
                 ModelTrainer.FEAT_MASK_VALUE)(self.input_feature)
 
-            x = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                     dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(input_masking)
+            x = LSTM(222, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                     dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(input_masking)  # 100
             x_1 = BatchNormalization()(x)
-            x_2 = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                       dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_1)
+            x_2 = LSTM(222, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0.05, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_1)  # 100
             x_3 = BatchNormalization()(x_2)
-            x_4 = LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_3)
+            x_4 = LSTM(222, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_3)  # 100
             x_5 = BatchNormalization()(x_4)
-            x_6 = LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                       dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_5)
+            x_6 = LSTM(222, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0.05, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_5)  # 50
             x_7 = BatchNormalization()(x_6)
-            x_8 = LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_7)
+            x_8 = LSTM(70, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                       dropout=0, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True)(x_7)  # 50
             self.layer_output = TimeDistributed(Dense(self.num_classes, kernel_initializer=tf.keras.initializers.TruncatedNormal(
                 0.0, 0.1), bias_initializer='zeros', name='logit'))(x_8)
 
@@ -301,24 +301,24 @@ class ModelTrainer():
             input_masking = Masking(
                 ModelTrainer.FEAT_MASK_VALUE)(self.input_feature)
 
-            x = Bidirectional(LSTM(256, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+            x = Bidirectional(LSTM(100, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
                                                    dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True),
-                              backward_layer=LSTM(256, activation='tanh', recurrent_activation='sigmoid',
+                              backward_layer=LSTM(100, activation='tanh', recurrent_activation='sigmoid',
                                                   kernel_regularizer=l2(0.01), dropout=0.2, recurrent_dropout=0, use_bias=True,
-                                                  unroll=False, return_sequences=True))(input_masking)
+                                                  unroll=False, return_sequences=True, go_backwards=True))(input_masking)  # 100
 
             x_1 = BatchNormalization()(x)
-            x_2 = Bidirectional(LSTM(256, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
-                                     dropout=0.2, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True),
-                                backward_layer=LSTM(256, activation='tanh', recurrent_activation='sigmoid',
-                                                    kernel_regularizer=l2(0.01), dropout=0.2, recurrent_dropout=0, use_bias=True,
-                                                    unroll=False, return_sequences=True))(input_masking)
+            x_2 = Bidirectional(LSTM(50, activation='tanh', recurrent_activation='sigmoid', kernel_regularizer=l2(0.01),
+                                     dropout=0.1, recurrent_dropout=0, use_bias=True, unroll=False, return_sequences=True),
+                                backward_layer=LSTM(50, activation='tanh', recurrent_activation='sigmoid',
+                                                    kernel_regularizer=l2(0.01), dropout=0.1, recurrent_dropout=0, use_bias=True,
+                                                    unroll=False, return_sequences=True, go_backwards=True))(x_1)  # 50
             x_3 = BatchNormalization()(x_2)
             x_4 = TimeDistributed(
-                Dense(self.num_classes, activation='maxout', kernel_regularizer=l2(0.01)))(x_3)
+                Dense(self.num_classes, activation='softmax', kernel_regularizer=l2(0.01)))(x_3)
             x_5 = Dropout(0.2)(x_4)
             x_6 = TimeDistributed(
-                Dense(self.num_classes, activation='maxout', kernel_regularizer=l2(0.01)))(x_5)
+                Dense(self.num_classes, activation='softmax', kernel_regularizer=l2(0.01)))(x_5)
             x_7 = Dropout(0.1)(x_6)
 
             self.layer_output = TimeDistributed(Dense(self.num_classes, kernel_initializer=tf.keras.initializers.TruncatedNormal(
