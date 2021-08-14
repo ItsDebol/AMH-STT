@@ -28,9 +28,9 @@ jobs:
           python scripts/cml_result.py
 
           cat models/results.txt >> report.md
-          echo # Best Model: STACKED LSTM LAYERS >> report.md
-          echo ## LOSS DIAGRAM >> report.md
+          echo "# Best Model: STACKED LSTM LAYERS" >> report.md
+          echo "## LOSS DIAGRAM" >> report.md
           cml-publish models/stacked_lstm-loss.jpg --md >> report.md
-          echo ## LER ERROR RATE DIAGRAM >> report.md
+          echo "## LER ERROR RATE DIAGRAM" >> report.md
           cml-publish models/stacked_lstm-ler.jpg --md >> report.md
           cml-send-comment report.md
