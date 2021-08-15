@@ -31,23 +31,22 @@ model_trainer.create_train_predict_models(model_name='stacked_lstm')
 
 
 # Training Selected Model
-model_trainer.train_model(model_name='stacked-lstm', mlflow_experiment='STACKED LSTM Layers',
+model_trainer.train_model(model_name='stacked-lstm-new', mlflow_experiment='STACKED LSTM Layers',
                           batch_size=70, optimizer='adam', learning_rate=0.001, early_stop=False)  # 0.01(best so far)
 
 
 # Displaying Trained Model Loss Diagrams
 # Loss Diagram (Type 1)
-model_trainer.draw_result_plots('stacked_lstm', 1)
+model_trainer.draw_result_plots('stacked_lstm_new', 1)
 # LER Diagram (Type 2)
-model_trainer.draw_result_plots('stacked_lstm', 2)
+model_trainer.draw_result_plots('stacked_lstm_new', 2)
 
+# Transcribing Validation Set
+model_trainer.transcript_validation()
 
 # Getting Sample Transcriptions Made by the Model
-model_trainer.get_sample_trained_model_transcriptions()
+model_trainer.get_sample_trained_model_transcriptions(amount=10)
 
-
-# Getting Sample Transcriptions Made by the Model, checking if augmented files have different transcriptions
-model_trainer.get_sample_trained_model_transcriptions(check_augmentation=True)
 
 # # ## Bidirectional LSTM MODEL
 
