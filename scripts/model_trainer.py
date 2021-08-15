@@ -1,3 +1,4 @@
+import sys
 from logging import log
 import scipy.io.wavfile as wav
 import glob
@@ -73,6 +74,7 @@ class ModelTrainer():
         except Exception as e:
             logger.exception(
                 'Failed to Create ModelTrainer Class Object Instance')
+            sys.exit(1)
 
     def change_constants(self, mask_value=FEAT_MASK_VALUE, sample_rate=SAMPLE_RATE, learning_rate=LEARNING_RATE, momentum=MOMENTUM):
         try:
@@ -86,6 +88,7 @@ class ModelTrainer():
         except Exception as e:
             logger.exception(
                 'Failed to Change ModelTrainer Class Constants')
+            sys.exit(1)
 
     def load_audio_files(self):
         # Loading the data
@@ -109,6 +112,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed To Load Audio Files')
+            sys.exit(1)
 
     def extract_feature(self):
         # Create a dataset composed of data with variable lengths
@@ -138,6 +142,7 @@ class ModelTrainer():
         except Exception as e:
             logger.exception(
                 f'Failed to Extract {self.feature_used} features from Audio Files')
+            sys.exit(1)
 
     def construct_inputs(self):
         try:
@@ -155,6 +160,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Construct Model Inputs')
+            sys.exit(1)
 
     def load_labels_and_alphabets(self):
         try:
@@ -171,6 +177,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Load Labels and Alphabets')
+            sys.exit(1)
 
     def extract_transciptions(self):
         try:
@@ -201,6 +208,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Extract Transcriptions')
+            sys.exit(1)
 
     def construct_targets(self):
         try:
@@ -217,12 +225,14 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Construct Model Targets')
+            sys.exit(1)
 
     def split_train_validation_sets(self):
         try:
             # Split to 80%,20%
             size, row = self.train_targets.shape
             train_size = int(size * 0.8)
+            self.size = train_size
             # val_size = size - train_size
             # Split Training and Validation sets
             self.train_inputs_final, self.val_inputs_final = self.train_inputs[
@@ -238,16 +248,23 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Split Train and Validation Sets')
+            sys.exit(1)
 
     def get_input_target_shapes(self):
-        print('INPUT SHAPES: \n\t', 'TRAIN: ', self.train_inputs_final.shape,
-              '\n\tVALIDATION: ', self.val_inputs_final.shape)
-        print('INPUT SEQUENCE LENGTH SHAPES: \n\t', 'TRAIN: ', self.train_seq_len_final.shape,
-              '\n\tVALIDATION: ',  self.val_seq_len_final.shape)
-        print('TARGET SHAPES: \n\t', 'TRAIN: ', self.train_targets_final.shape,
-              '\n\tVALIDATION: ',  self.val_targets_final.shape)
-        print('TARGET SEQUENCE LENGTH SHAPES: \n\t', 'TRAIN: ', self.train_targets_len_final.shape,
-              '\n\tVALIDATION: ',  self.val_targets_len_final.shape)
+        try:
+            print('INPUT SHAPES: \n\t', 'TRAIN: ', self.train_inputs_final.shape,
+                  '\n\tVALIDATION: ', self.val_inputs_final.shape)
+            print('INPUT SEQUENCE LENGTH SHAPES: \n\t', 'TRAIN: ', self.train_seq_len_final.shape,
+                  '\n\tVALIDATION: ',  self.val_seq_len_final.shape)
+            print('TARGET SHAPES: \n\t', 'TRAIN: ', self.train_targets_final.shape,
+                  '\n\tVALIDATION: ',  self.val_targets_final.shape)
+            print('TARGET SEQUENCE LENGTH SHAPES: \n\t', 'TRAIN: ', self.train_targets_len_final.shape,
+                  '\n\tVALIDATION: ',  self.val_targets_len_final.shape)
+
+        except Exception as e:
+            logger.exception(
+                'Failed to Print Input Target Shapes, Check if they have been Constructed')
+            sys.exit(1)
 
     def define_model_input_params(self):
         try:
@@ -265,6 +282,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Define Model Input Parameters')
+            sys.exit(1)
 
     def get_stacked_LSTM_model(self):
         try:
@@ -295,6 +313,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to define Stacked LSTM Model')
+            sys.exit(1)
 
     def get_bidirectional_lstm_model(self):
         try:
@@ -331,6 +350,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to define Bidirectional LSTM Model')
+            sys.exit(1)
 
     def create_train_predict_models(self, model_name: str = 'stacked_lstm'):
         try:
@@ -354,6 +374,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Create Train and Predict Models')
+            sys.exit(1)
 
     def train_model(self, model_name: str, mlflow_experiment: str, batch_size: int, optimizer: str = 'adam', learning_rate: float = LEARNING_RATE, momentum: float = MOMENTUM, checkpoint_save: bool = True, early_stop: bool = False):
         try:
@@ -396,6 +417,7 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed to Train Model')
+            sys.exit(1)
 
     def draw_result_plots(self, model_name: str, loss_type: int, title: str = '', size: Tuple[int, int] = (10, 5)):
         try:
@@ -434,48 +456,43 @@ class ModelTrainer():
 
         except Exception as e:
             logger.exception('Failed To Plot History Result')
+            sys.exit(1)
 
-    def get_sample_trained_model_transcriptions(self, amount: int = 2, check_augmentation: bool = False):
+    def transcript_validation(self):
         try:
-            # Decoding
-            size = self.val_inputs_final.shape
-            size = size[0]
-            amount *= 7
-            if amount > size:
-                amount = size
-
-            print('Original:')
-            for index, org_label in enumerate(self.original_list):
-                if(check_augmentation):
-                    if(index + 1 > amount):
-                        print(
-                            'Effects are order: #BG1, #BG2, #BG3, #CLEAN, #GAUSIAN_NOISE, #VOL_INCREASE, #VOL_DECREASE')
-                        break
-                    print(index, '. ', org_label)
-                else:
-                    if(index + 1 > amount):
-                        break
-                    elif(index % 7 == 0):
-                        print(index, '. ', org_label)
-            print('Decoded:')
+            self.decoded = []
             decoded, _ = tf.nn.ctc_greedy_decoder(tf.transpose(self.model_predict.predict(
-                self.val_inputs_final[:amount]), (1, 0, 2)), self.val_seq_len_final[:amount])
+                self.val_inputs_final), (1, 0, 2)), self.val_seq_len_final)
             d = tf.sparse.to_dense(decoded[0], default_value=-1).numpy()
             str_decoded = [''.join([self.alphabets['num_to_char'][str(x)]
                                     for x in np.asarray(row) if x != -1]) for row in d]
-            for index, prediction in enumerate(str_decoded):
+            for prediction in str_decoded:
                 # Replacing blank label to none
-                # s = s.replace(chr(ord('z') + 1), '')
-                if(check_augmentation):
-                    prediction = prediction.replace(
-                        self.alphabets['num_to_char']['0'], ' ')
-                    print(index, '. ', prediction)
-                else:
-                    if(index % 7 == 0):
-                        # Replacing space label to space
-                        prediction = prediction.replace(
-                            self.alphabets['num_to_char']['0'], ' ')
-                        print(index, '. ', prediction)
+                # s = s.replace(self.num_classes, '')
+                # Replacing Spaces
+                prediction = prediction.replace(
+                    self.alphabets['num_to_char']['0'], ' ')
+                self.decoded.append(prediction)
+
+            logger.info('Successfully Transcibed Validation Set')
+
+        except Exception as e:
+            logger.exception('Failed to Transcribe Validation Set')
+            sys.exit(1)
+
+    def get_sample_trained_model_transcriptions(self, amount: int = 2):
+        try:
+            print('Original:')
+            original_list = self.original_list[self.size:]
+            if(amount > len(original_list)):
+                amount = len(original_list)
+
+            for index in range(amount):
+                print(index, '. ', original_list[index])
+
+            print('Decoded:')
+            for index in range(amount):
+                print(index, '. ', self.decoded[index])
 
             logger.info(
                 'Successfully Produced Predicted Transcription Samples')
@@ -483,6 +500,7 @@ class ModelTrainer():
         except Exception as e:
             logger.exception(
                 'Failed to Get Transcription Samples From Trained Model')
+            sys.exit(1)
 
 
 if __name__ == '__main__':

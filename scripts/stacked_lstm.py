@@ -5,7 +5,8 @@ import os
 from model_trainer import ModelTrainer
 
 # Creating Model Trainer Class
-model_trainer = ModelTrainer(feature_used='logmelfb', duration_range=(3, 6))
+model_trainer = ModelTrainer(
+    feature_used='logmelfb', duration_range=(2, 6), epoch=462)
 
 
 # Loading Audio Files to the Class
@@ -31,7 +32,7 @@ model_trainer.create_train_predict_models(model_name='stacked_lstm')
 
 # Training Selected Model
 model_trainer.train_model(model_name='stacked-lstm', mlflow_experiment='STACKED LSTM Layers',
-                          batch_size=105, optimizer='adam', learning_rate=0.001, early_stop=False)  # 0.01(best so far)
+                          batch_size=70, optimizer='adam', learning_rate=0.001, early_stop=False)  # 0.01(best so far)
 
 
 # Displaying Trained Model Loss Diagrams
